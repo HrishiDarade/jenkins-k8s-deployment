@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        KUBECONFIG = credentials('kubeconfig')  // Add this in Jenkins as secret file
+        KUBECONFIG = credentials('k8s-secret-file')
     }
     stages {
         stage('Checkout') {
