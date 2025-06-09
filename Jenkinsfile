@@ -1,9 +1,5 @@
 pipeline {
-    agent {
-        docker {
-            image 'bitnami/kubectl:latest'   // ✅ kubectl CLI pre-installed
-        }
-    }
+    agent any
     environment {
         KUBECONFIG = credentials('k8s-secret-file')
     }
@@ -21,7 +17,7 @@ pipeline {
         }
         stage('Verify App') {
             steps {
-                sh 'kubectl get pods -o wide'
+                sh 'kubectl get pods'
                 sh 'curl -s localhost:30085 || echo "App not reachable"'
             }
         }
