@@ -3,7 +3,6 @@ pipeline {
     stages {
         stage('Deploy to Kubernetes') {
             steps {
-                // Use the kubeconfig file directly
                 withCredentials([file(credentialsId: 'k8s-secret-file', variable: 'KUBECONFIG')]) {
                     sh '''
                     # Use the kubeconfig file to apply manifests
