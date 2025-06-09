@@ -1,35 +1,33 @@
 pipeline {
     agent any
+    environment {
+        KUBECONFIG = credentials('kubeconfig')  // Add this in Jenkins as secret file
+    }
     stages {
-        stage('Deploy to Kubernetes') {
+        stage('Checkout') {
             steps {
-                withCredentials([file(credentialsId: 'k8s-secret-file', variable: 'KUBECONFIG')]) {
-                    sh '''
-                    # Use the kubeconfig file to apply manifests
-                    kubectl apply -f deployment.yaml --kubeconfig=$KUBECONFIG
-                    kubectl apply -f service.yaml --kubeconfig=$KUBECONFIG
-                    '''
-                }
+                git 'https://github.com/HrishiDarade/jenkins-k8s-deployment'
             }
         }
-        stage('Test Deployment') {
+        stage('Deploy to Kubernetes') {
             steps {
-                withCredentials([file(credentialsId: 'k8s-secret-file', variable: 'KUBECONFIG')]) {
-                    sh '''
-                    # Verify the deployment
-                    kubectl get pods --kubeconfig=$KUBECONFIG
-                    kubectl get services --kubeconfig=$KUBECONFIG
-                    '''
-                }
+                sh 'kubectl apply -f deployment.yaml'
+                sh 'kubectl apply -f service.yaml'
+            }
+        }
+        stage('Verify App') {
+            steps {
+                sh 'kubectl get pods'
+                sh 'curl -s localhost:30085'
             }
         }
     }
     post {
-        success {
-            echo 'Deployment successful!'
-        }
         failure {
-            echo 'Deployment failed!'
+            echo '❌ Deployment failed!'
+        }
+        success {
+            echo '✅ Deployment successful!'
         }
     }
 }
