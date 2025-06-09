@@ -6,7 +6,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/HrishiDarade/jenkins-k8s-deployment'
+                git branch: 'main', url: 'https://github.com/HrishiDarade/jenkins-k8s-deployment'
             }
         }
         stage('Deploy to Kubernetes') {
